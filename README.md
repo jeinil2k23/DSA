@@ -21,3 +21,19 @@ void checkIfFileIsOld(const string& filePath) {
         }
     }
 }
+void cleanFolder(const string& folderPath) {
+    DIR *dir;
+    struct dirent *entry;
+
+    if ((dir = opendir(folderPath.c_str())) != nullptr) {
+        while ((entry = readdir(dir)) != nullptr) {
+            string fileName = entry->d_name;
+            if (fileName != "." && fileName != "..") {
+                string filePath = folderPath + "/" + fileName;
+                checkIfFileIsOld(filePath);
+                checkIfFileIsEmpty(filePath);
+                checkFileAccessCount(filePath);
+                // Perform cleaning if necessary
+            }
+        }
+        closedir(dir);
