@@ -37,3 +37,13 @@ void cleanFolder(const string& folderPath) {
             }
         }
         closedir(dir);
+        } else {
+        cerr << "Error opening directory " << folderPath << endl;
+    }
+}
+
+int main() {
+    string folderPath = "path/to/your/folder"; // Change this to the folder you want to clean
+    cleanFolder(folderPath);
+    return 0;
+}
