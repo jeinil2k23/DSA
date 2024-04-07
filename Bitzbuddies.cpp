@@ -22,6 +22,20 @@ void checkIfFileIsOld(const string& filePath) {
         }
     }
 }
+void checkIfFileIsEmpty(const string& filePath) {
+    ifstream file(filePath);
+    if (file.peek() == ifstream::traits_type::eof()) {
+        cout << "File is empty: " << filePath << endl;
+        // Perform cleaning if necessary
+        remove(filePath.c_str()); // Delete the file
+    }
+}
+
+void checkFileAccessCount(const string& filePath) {
+    // Implement a function to get the access count of a file using platform-specific methods
+    // For simplicity, we'll print a message
+    cout << "Checking access count for: " << filePath << endl;
+}
 
 void deleteEmptyFiles(const string& directory) {
     DIR *dir;
