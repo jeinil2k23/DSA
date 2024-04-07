@@ -42,6 +42,29 @@ void cleanFolder(const string& folderPath) {
     }
 }
 
+void deleteEmptyFiles(const string& directory) {
+    DIR *dir;
+    struct dirent *entry;
+    struct stat file_stat;
+
+    if ((dir = opendir(directory.c_str())) != nullptr) {
+        while ((entry = readdir(dir)) != nullptr) {
+            string full_path = directory + "/" + entry->d_name;
+            if (stat(full_path.c_str(), &file_stat) == 0) {
+                // Check if it's a regular file and its size is zero
+                if (S_ISREG(file_stat.st_mode) && file_stat.st_size == 0) {
+                    // Delete the empty file
+                    unlink(full_path.c_str());
+                    cout << "Deleted empty file: " << full_path << endl;
+                }
+            }
+        }
+        closedir(dir);
+    } else {
+        cout << "Failed to open directory" << endl;
+    }
+}
+
 int main() {
     string folderPath = "path/to/your/folder"; // Change this to the folder you want to clean
     cleanFolder(folderPath);
