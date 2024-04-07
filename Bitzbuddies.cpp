@@ -76,7 +76,28 @@ void sortFilesBySize(const string& directory) {
     }
 }
 
-6+
+void displayFileDates(const string& directory) {
+    DIR *dir;
+    struct dirent *entry;
+    struct stat file_stat;
+
+    if ((dir = opendir(directory.c_str())) != nullptr) {
+        while ((entry = readdir(dir)) != nullptr) {
+            string full_path = directory + "/" + entry->d_name;
+            if (stat(full_path.c_str(), &file_stat) == 0) {
+                // Check if it's a regular file
+                if (S_ISREG(file_stat.st_mode)) {
+                    // Get last modification time
+                    time_t lastModified = file_stat.st_mtime;
+                    cout << "File: " << full_path << ", Last Modified: " << ctime(&lastModified);
+                }
+            }
+        }
+        closedir(dir);
+    } else {
+        cerr << "Failed to open directory" << endl;
+    }
+}
 
 void deleteEmptyFiles(const string& directory) {
     DIR *dir;
@@ -141,7 +162,8 @@ void cleanFolder(const string& folderPath) {
     // Delete old files
     deleteOldFiles(folderPath);
     
-    
+    // Display file dates
+    displayFileDates(folderPath);
     
     //DIsplay order of files in ascending order by size  
     sortFilesBySize(folderPath);
