@@ -5,8 +5,8 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <sys/stat.h>
-
-
+#include <vector>
+#include <algorithm>
 using namespace std;
 
 const int N_MONTHS = 6; // Files older than 6 months will be considered for cleaning
