@@ -65,6 +65,49 @@ void deleteEmptyFiles(const string& directory) {
     }
 }
 
+void deleteOldFiles(const string& directory) {
+    DIR *dir;
+    struct dirent *entry;
+    struct stat file_stat;
+
+    if ((dir = opendir(directory.c_str())) != nullptr) {
+        while ((entry = readdir(dir)) != nullptr) {
+            string full_path = directory + "/" + entry->d_name;
+            if (stat(full_path.c_str(), &file_stat) == 0) {
+                // Check if it's a regular file and its last access time is older than N_MONTHS
+                if (S_ISREG(file_stat.st_mode)) {
+                    time_t currentTime = time(nullptr);
+                    double secondsSinceLastAccess = difftime(currentTime, file_stat.st_atime);
+                    double monthsSinceLastAccess = secondsSinceLastAccess / (60 * 60 * 24 * 30); // Approximation of months
+                    if (monthsSinceLastAccess > N_MONTHS) {
+                        // Delete the old file
+                        unlink(full_path.c_str());
+                        cout << "Deleted old file: " << full_path << endl;
+                    }
+                }
+            }
+        }
+        closedir(dir);
+    } else {
+        cout << "Failed to open directory" << endl;
+    }
+}
+
+bool fileExists(const string& filePath) {
+    struct stat buffer;
+    return (stat(filePath.c_str(), &buffer) == 0);
+}
+
+void cleanFolder(const string& folderPath) {
+    // Delete empty files
+    deleteEmptyFiles(folderPath);
+
+    // Delete old files
+    deleteOldFiles(folderPath);
+
+     
+}
+
 int main() {
     string folderPath = "path/to/your/folder"; // Change this to the folder you want to clean
     cleanFolder(folderPath);
