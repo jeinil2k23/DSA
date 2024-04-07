@@ -6,6 +6,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
+
 using namespace std;
 
 const int N_MONTHS = 6; // Files older than 6 months will be considered for cleaning
@@ -36,6 +37,46 @@ void checkFileAccessCount(const string& filePath) {
     // For simplicity, we'll print a message
     cout << "Checking access count for: " << filePath << endl;
 }
+
+struct FileData {
+    string name;
+    off_t size;
+};
+
+bool compareFileSize(const FileData& a, const FileData& b) {
+    return a.size < b.size;
+}
+
+void sortFilesBySize(const string& directory) {
+    DIR *dir;
+    struct dirent *entry;
+
+    vector<FileData> files;
+
+    if ((dir = opendir(directory.c_str())) != nullptr) {
+        while ((entry = readdir(dir)) != nullptr) {
+            string full_path = directory + "/" + entry->d_name;
+            struct stat file_stat;
+            if (stat(full_path.c_str(), &file_stat) == 0) {
+                if (S_ISREG(file_stat.st_mode)) {
+                    files.push_back({entry->d_name, file_stat.st_size});
+                }
+            }
+        }
+        closedir(dir);
+    } else {
+        cerr << "Failed to open directory" << endl;
+        return;
+    }
+
+    sort(files.begin(), files.end(), compareFileSize);
+
+    for (const auto& file : files) {
+        cout << file.size << " bytes\t" << file.name << endl;
+    }
+}
+
+6+
 
 void deleteEmptyFiles(const string& directory) {
     DIR *dir;
@@ -99,6 +140,11 @@ void cleanFolder(const string& folderPath) {
 
     // Delete old files
     deleteOldFiles(folderPath);
+    
+    
+    
+    //DIsplay order of files in ascending order by size  
+    sortFilesBySize(folderPath);
     
 }
 
