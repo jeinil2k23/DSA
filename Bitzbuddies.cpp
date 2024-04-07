@@ -11,6 +11,18 @@ using namespace std;
 const int N_MONTHS = 6; // Files older than 6 months will be considered for cleaning
 const int M_ACCESS_COUNT = 3; // Files accessed less than 3 times will be considered for cleaning
 
+void checkIfFileIsOld(const string& filePath) {
+    struct stat result;
+    if (stat(filePath.c_str(), &result) == 0) {
+        time_t currentTime = time(nullptr);
+        double secondsSinceLastAccess = difftime(currentTime, result.st_atime);
+        double monthsSinceLastAccess = secondsSinceLastAccess / (60 * 60 * 24 * 30); // Approximation of months
+        if (monthsSinceLastAccess > N_MONTHS) {
+            cout << "File is old: " << filePath << endl;
+        }
+    }
+}
+
 void deleteEmptyFiles(const string& directory) {
     DIR *dir;
     struct dirent *entry;
@@ -73,8 +85,7 @@ void cleanFolder(const string& folderPath) {
 
     // Delete old files
     deleteOldFiles(folderPath);
-
-     
+    
 }
 
 int main() {
